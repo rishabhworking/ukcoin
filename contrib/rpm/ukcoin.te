@@ -1,0 +1,81 @@
+policy_module(ukcoin, 1.100.1)
+
+########################################
+#
+# Declarations
+#
+
+type ukcoin_t;
+type ukcoin_exec_t;
+init_daemon_domain(ukcoin_t, ukcoin_exec_t)
+
+permissive ukcoin_t;
+
+type ukcoin_initrc_exec_t;
+init_script_file(ukcoin_initrc_exec_t)
+
+type ukcoin_conf_t;
+files_type(ukcoin_conf_t)
+
+type ukcoin_var_lib_t;
+files_type(ukcoin_var_lib_t)
+
+type ukcoin_var_run_t;
+files_type(ukcoin_var_run_t)
+
+type ukcoin_port_t;
+corenet_port(ukcoin_port_t)
+
+########################################
+#
+# ukcoin local policy
+#
+allow ukcoin_t self:process { fork };
+
+allow ukcoin_t self:fifo_file rw_fifo_file_perms;
+allow ukcoin_t self:unix_stream_socket create_stream_socket_perms;
+
+manage_dirs_pattern(ukcoin_t, ukcoin_conf_t, ukcoin_conf_t)
+manage_files_pattern(ukcoin_t, ukcoin_conf_t, ukcoin_conf_t)
+
+manage_dirs_pattern(ukcoin_t, ukcoin_var_lib_t, ukcoin_var_lib_t)
+manage_files_pattern(ukcoin_t, ukcoin_var_lib_t, ukcoin_var_lib_t)
+files_var_lib_filetrans(ukcoin_t, ukcoin_var_lib_t, { dir file })
+
+manage_dirs_pattern(ukcoin_t, ukcoin_var_run_t, ukcoin_var_run_t)
+manage_files_pattern(ukcoin_t, ukcoin_var_run_t, ukcoin_var_run_t)
+
+sysnet_dns_name_resolve(ukcoin_t)
+corenet_all_recvfrom_unlabeled(ukcoin_t)
+
+allow ukcoin_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_if(ukcoin_t)
+corenet_tcp_sendrecv_generic_node(ukcoin_t)
+corenet_tcp_sendrecv_all_ports(ukcoin_t)
+corenet_tcp_bind_generic_node(ukcoin_t)
+
+gen_require(`
+    type ukcoin_port_t;
+')
+allow ukcoin_t ukcoin_port_t:tcp_socket name_bind;
+
+gen_require(`
+    type ukcoin_port_t;
+')
+allow ukcoin_t ukcoin_port_t:tcp_socket name_connect;
+
+domain_use_interactive_fds(ukcoin_t)
+
+files_read_etc_files(ukcoin_t)
+
+miscfiles_read_localization(ukcoin_t)
+
+sysnet_dns_name_resolve(ukcoin_t)
+
+allow ukcoin_t ukcoin_exec_t:file execute_no_trans;
+allow ukcoin_t self:process setsched;
+corecmd_exec_ls(ukcoin_t)
+corenet_tcp_connect_http_port(ukcoin_t)
+dev_read_urand(ukcoin_t)
+fs_getattr_xattr_fs(ukcoin_t)
+kernel_read_system_state(ukcoin_t)

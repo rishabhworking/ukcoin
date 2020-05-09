@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Ukcoin Core
+Comment=Connect to the Ukcoin P2P Network
+Comment[de]=Verbinde mit dem Ukcoin peer-to-peer Netzwerk
+Comment[fr]=Ukcoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Ukcoin, eşten eşe kriptografik sanal para birimi
+Exec=ukcoin-qt %u
+Terminal=false
+Type=Application
+Icon=ukcoin128
+MimeType=x-scheme-handler/ukcoin;
+Categories=Office;Finance;

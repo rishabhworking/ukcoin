@@ -1,0 +1,6 @@
+usr/local/bin/ukcoin-qt usr/bin
+share/pixmaps/ukcoin32.xpm usr/share/pixmaps
+share/pixmaps/ukcoin16.xpm usr/share/pixmaps
+share/pixmaps/ukcoin128.png usr/share/pixmaps
+debian/ukcoin-qt.desktop usr/share/applications
+debian/ukcoin-qt.protocol usr/share/kde4/services/

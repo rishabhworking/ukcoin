@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+#  ukcoind The ukcoin core server.
+#
+#
+# chkconfig: 345 80 20
+# description: ukcoind
+# processname: ukcoind
+#
+
+# Source function library.
+. /etc/init.d/functions
+
+# you can override defaults in /etc/sysconfig/ukcoind, see below
+if [ -f /etc/sysconfig/ukcoind ]; then
+        . /etc/sysconfig/ukcoind
+fi
+
+RETVAL=0
+
+prog=ukcoind
+# you can override the lockfile via UKCD_LOCKFILE in /etc/sysconfig/ukcoind
+lockfile=${UKCD_LOCKFILE-/var/lock/subsys/ukcoind}
+
+# ukcoind defaults to /usr/bin/ukcoind, override with UKCD_BIN
+ukcoind=${UKCD_BIN-/usr/bin/ukcoind}
+
+# ukcoind opts default to -disablewallet, override with UKCD_OPTS
+ukcoind_opts=${UKCD_OPTS--disablewallet}
+
+start() {
+    echo -n $"Starting $prog: "
+    daemon $DAEMONOPTS $ukcoind $ukcoind_opts
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && touch $lockfile
+    return $RETVAL
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $prog
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f $lockfile
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    status)
+        status $prog
+        ;;
+    restart)
+        stop
+        start
+        ;;
+    *)
+        echo "Usage: service $prog {start|stop|status|restart}"
+        exit 1
+        ;;
+esac

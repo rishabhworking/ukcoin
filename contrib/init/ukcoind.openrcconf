@@ -1,0 +1,33 @@
+# /etc/conf.d/ukcoind: config file for /etc/init.d/ukcoind
+
+# Config file location
+#UKCD_CONFIGFILE="/etc/ukcoin/ukcoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $UKCD_USER)
+#UKCD_PIDDIR="/var/run/ukcoind"
+
+# What filename to give the pidfile
+#UKCD_PIDFILE="${UKCD_PIDDIR}/ukcoind.pid"
+
+# Where to write ukcoind data (be mindful that the blockchain is large)
+#UKCD_DATADIR="/var/lib/ukcoind"
+
+# User and group to own ukcoind process
+#UKCD_USER="ukcoin"
+#UKCD_GROUP="ukcoin"
+
+# Path to ukcoind executable
+#UKCD_BIN="/usr/bin/ukcoind"
+
+# Nice value to run ukcoind under
+#UKCD_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#UKCD_OPTS=""
+
+# The timeout in seconds OpenRC will wait for ukcoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+UKCD_SIGTERM_TIMEOUT=60

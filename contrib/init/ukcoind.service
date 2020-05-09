@@ -1,0 +1,22 @@
+[Unit]
+Description=Ukcoin's distributed currency daemon
+After=network.target
+
+[Service]
+User=ukcoin
+Group=ukcoin
+
+Type=forking
+PIDFile=/var/lib/ukcoind/ukcoind.pid
+ExecStart=/usr/bin/ukcoind -daemon -pid=/var/lib/ukcoind/ukcoind.pid \
+-conf=/etc/ukcoin/ukcoin.conf -datadir=/var/lib/ukcoind -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

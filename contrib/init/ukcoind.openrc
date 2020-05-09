@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/ukcoin/.ukcoin" ]; then
+	UKCD_DEFAULT_DATADIR="/var/lib/ukcoin/.ukcoin"
+else
+	UKCD_DEFAULT_DATADIR="/var/lib/ukcoind"
+fi
+
+UKCD_CONFIGFILE=${UKCD_CONFIGFILE:-/etc/ukcoin/ukcoin.conf}
+UKCD_PIDDIR=${UKCD_PIDDIR:-/var/run/ukcoind}
+UKCD_PIDFILE=${UKCD_PIDFILE:-${UKCD_PIDDIR}/ukcoind.pid}
+UKCD_DATADIR=${UKCD_DATADIR:-${UKCD_DEFAULT_DATADIR}}
+UKCD_USER=${UKCD_USER:-${UKC_USER:-ukcoin}}
+UKCD_GROUP=${UKCD_GROUP:-ukcoin}
+UKCD_BIN=${UKCD_BIN:-/usr/bin/ukcoind}
+UKCD_NICE=${UKCD_NICE:-${NICELEVEL:-0}}
+UKCD_OPTS="${UKCD_OPTS:-${UKC_OPTS}}"
+
+name="Ukcoin Core Daemon"
+description="Ukcoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/ukcoind"
+command_args="-pid=\"${UKCD_PIDFILE}\" \
+		-conf=\"${UKCD_CONFIGFILE}\" \
+		-datadir=\"${UKCD_DATADIR}\" \
+		-daemon \
+		${UKCD_OPTS}"
+
+required_files="${UKCD_CONFIGFILE}"
+start_stop_daemon_args="-u ${UKCD_USER} \
+			-N ${UKCD_NICE} -w 2000"
+pidfile="${UKCD_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${UKCD_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${UKCD_USER}:${UKCD_GROUP}" \
+	"${UKCD_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${UKCD_USER}:${UKCD_GROUP}" \
+	"${UKCD_PIDDIR}"
+
+	checkpath -f \
+	-o ${UKCD_USER}:${UKCD_GROUP} \
+	-m 0660 \
+	${UKCD_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${UKCD_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run ukcoind."
+		eerror "The setting must appear in ${UKCD_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following "
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Ukcoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

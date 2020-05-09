@@ -1,0 +1,8 @@
+/usr/bin/ukcoin-cli		--	gen_context(system_u:object_r:ukcoin_exec_t,s0)
+/usr/sbin/ukcoind		--	gen_context(system_u:object_r:ukcoin_exec_t,s0)
+/usr/lib(64)?/ukcoin/ukcoind		--	gen_context(system_u:object_r:ukcoin_exec_t,s0)
+
+/etc/ukcoin(/.*)?		gen_context(system_u:object_r:ukcoin_conf_t,s0)
+/var/lib/ukcoin(/.*)?		gen_context(system_u:object_r:ukcoin_var_lib_t,s0)
+
+(/var)?/run/ukcoind(/.*)?   gen_context(system_u:object_r:ukcoin_var_run_t,s0)
